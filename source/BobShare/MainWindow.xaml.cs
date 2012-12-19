@@ -1,5 +1,6 @@
 ﻿using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Auth;
 using Microsoft.WindowsAzure.Storage.Blob;
 using System;
 using System.Collections.Generic;
@@ -39,6 +40,14 @@ namespace BobShare
             btnBrowse.Click += btnBrowse_Click;
             btnSend.Click += btnSend_Click;
             btnReset.Click += btnReset_Click;
+            btnSettings.Click += btnSettings_Click;
+        }
+
+        void btnSettings_Click(object sender, RoutedEventArgs e)
+        {
+            var window = new UserSettings();
+            window.Show();
+            this.Close();
         }
 
         void btnReset_Click(object sender, RoutedEventArgs e)
@@ -69,8 +78,8 @@ namespace BobShare
 
         private void UploadFile(string filePath)
         {
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(
-                CloudConfigurationManager.GetSetting("DefaultStorageAccount"));
+            var credentials = new StorageCredentials(Properties.Settings.Default.StorageName, Properties.Settings.Default.StorageKey);
+            var storageAccount = new CloudStorageAccount(credentials, true);
 
             CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
             CloudBlobContainer container = blobClient.GetContainerReference("shared");
@@ -107,7 +116,7 @@ namespace BobShare
 
         async Task<string> ShortenUrl(string longUrl)
         {
-            var key = ConfigurationManager.AppSettings["BitlyKey"];
+            var key = Properties.Settings.Default.BitlyKey;
             var url = String.Format("https://api-ssl.bitly.com/v3/shorten?access_token={0}&longUrl={1}", key, longUrl);
             HttpClient client = new HttpClient();
             var result = await client.GetAsync(url);

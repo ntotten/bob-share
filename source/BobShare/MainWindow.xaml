@@ -1,10 +1,8 @@
 ﻿<Window x:Class="BobShare.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Bob Share" Height="303.333" Width="534" ResizeMode="CanMinimize">
+        Title="Bob Share" Height="336" Width="534" ResizeMode="CanMinimize">
     <Grid>
-        
-        
         <GroupBox Header="Step 1: Select File to Share" HorizontalAlignment="Left" Margin="10,20,0,0" VerticalAlignment="Top" Height="75" Width="500">
             <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Orientation="Horizontal" Margin="10,15,0,0">
                 <TextBox Name="txtFilePath" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="356" IsReadOnly="True" />
@@ -23,5 +21,6 @@
                 <Button Name="btnReset" Content="Reset" HorizontalAlignment="Left" VerticalAlignment="Top" Width="100" Height="23" Margin="10,0,0,0" IsEnabled="False"/>
             </StackPanel>
         </GroupBox>
+        <Button Name="btnSettings" Content="Settings" HorizontalAlignment="Left" Margin="10,271,0,0" VerticalAlignment="Top" Width="69" RenderTransformOrigin="3.683,0.083" />
     </Grid>
 </Window>
