@@ -57,6 +57,7 @@ namespace BobShare
             btnBrowse.IsEnabled = true;
             btnSend.IsEnabled = false;
             btnReset.IsEnabled = false;
+            prgUploadProgress.Value = 0;
         }
 
         void btnBrowse_Click(object sender, RoutedEventArgs e)
