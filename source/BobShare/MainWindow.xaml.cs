@@ -100,7 +100,6 @@ namespace BobShare
 
         async void bt_TransferCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
         {
-            txtFilePath.Text = "";
             btnSend.IsEnabled = false;
             btnBrowse.IsEnabled = false;
             btnReset.IsEnabled = true;
