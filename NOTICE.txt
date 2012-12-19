@@ -14,20 +14,8 @@ packages. Please refer to the specific files and/or packages for more
 detailed information about the authors, copyright notices, and licenses. 
 
 
-Bootstrap
+Json.Net
 -----------------
-Website: http://twitter.github.com/bootstrap/
-Copyright: Copyright 2012 Twitter, Inc.
-License: Apache License, Version 2.0
-
-Ember.js
------------------
-Website: http://emberjs.com/
-Copyright: Copyright (c) 2011 Yehuda Katz, Tom Dale, Charles Jolley and Ember.js contributors
-License: MIT License
-
-Glyphicons Free
------------------
-Website: http://glyphicons.com
-Copyright: © 2010 - 2012 Jan Kovařík
-License: Creative Commons Attribution 3.0 Unported (CC BY 3.0)
+Website: http://json.codeplex.com/
+Copyright: Copyright (c) 2007 James Newton-King
+License: The MIT License (MIT)
