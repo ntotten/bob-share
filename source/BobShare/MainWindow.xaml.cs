@@ -30,6 +30,7 @@ namespace BobShare
     public partial class MainWindow : Window
     {
         System.Windows.Forms.OpenFileDialog fileDialog;
+        BlobTransfer blobTransfer;
 
         public MainWindow()
         {
@@ -47,6 +48,7 @@ namespace BobShare
                 tabUpload.IsEnabled = false;
                 tabControlMain.SelectedIndex = 1;
             }
+            ResetUI();
         }
 
         void ButtonCopyClick(object sender, RoutedEventArgs e)
@@ -56,15 +58,18 @@ namespace BobShare
 
         void ButtonResetClick(object sender, RoutedEventArgs e)
         {
-            txtDownloadUrl.Text = "";
-            txtFilePath.Text = "";
-            btnBrowse.IsEnabled = true;
-            btnUpload.IsEnabled = false;
-            btnReset.IsEnabled = false;
-            btnUpload.IsEnabled = false;
-            btnCopy.IsEnabled = false;
-            btnUpload.Content = "Upload";
-            prgUploadProgress.Value = 0;
+            if (blobTransfer != null && blobTransfer.IsBusy)
+            {
+                var result = MessageBox.Show("Are you sure you want to reset? This will cancel the current upload.", "Cancel Upload", MessageBoxButton.YesNo);
+                if (result == MessageBoxResult.Yes)
+                {
+                    blobTransfer.CancelAsync();
+                    btnReset.Content = "Canceling...";
+                    btnReset.IsEnabled = false;
+                }
+                return;
+            }
+            ResetUI();
         }
 
         private void ButtonBrowseClick(object sender, RoutedEventArgs e)
@@ -98,6 +103,11 @@ namespace BobShare
 
         private async void TransferCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
         {
+            if (e.Cancelled)
+            {
+                ResetUI();
+                return;
+            }
             btnReset.IsEnabled = true;
             btnCopy.IsEnabled = true;
             btnUpload.Content = "Complete";
@@ -105,11 +115,51 @@ namespace BobShare
             txtDownloadUrl.Text = await ShortenUrl(url);
 
             MessageBox.Show("File Upload Complete.");
+
+            blobTransfer = null;
         }
 
         private void TransferProgressChanged(object sender, BlobTransfer.BlobTransferProgressChangedEventArgs e)
         {
             prgUploadProgress.Value = e.ProgressPercentage;
+            statusSpeed.Content = (int)(e.Speed / 1024) + "kb/sec";
+            statusBytesTransfered.Content = (int)(e.BytesSent / 1024) + (int)(e.BytesSent % 1024) + "kb sent";
+            statusBytesRemaining.Content = (int)((e.TotalBytesToSend - e.BytesSent) / 1024) + "kb remaining";
+            string timeRemaining;
+            if (e.TimeRemaining.TotalHours > 0)
+            {
+                timeRemaining = Math.Round(e.TimeRemaining.TotalHours, 2) + " hours";
+            }
+            else if (e.TimeRemaining.TotalMinutes > 0)
+            {
+                timeRemaining = Math.Round(e.TimeRemaining.TotalMinutes, 2) + " mins";
+            }
+            else
+            {
+                timeRemaining = Math.Round(e.TimeRemaining.TotalSeconds, 0) + " secs";
+            }
+            statusTimeRemaining.Content = timeRemaining;
+
+
+        }
+
+        private void ResetUI()
+        {
+            txtDownloadUrl.Text = "";
+            txtFilePath.Text = "";
+            btnBrowse.IsEnabled = true;
+            btnUpload.IsEnabled = false;
+            btnUpload.Content = "Upload";
+            btnCopy.IsEnabled = false;
+            btnReset.Content = "Reset";
+            btnReset.IsEnabled = false;
+
+            statusBytesRemaining.Content = "0kb remaining";
+            statusBytesTransfered.Content = "0kb sent";
+            statusSpeed.Content = "0kb/sec";
+            statusTimeRemaining.Content = "0 secs remaining";
+
+            prgUploadProgress.Value = 0;
         }
 
         private bool SettingsHaveValues()
@@ -133,10 +183,10 @@ namespace BobShare
 
             var url = blockBlob.Uri.ToString();
 
-            BlobTransfer bt = new BlobTransfer();
-            bt.TransferProgressChanged += TransferProgressChanged;
-            bt.TransferCompleted += TransferCompleted;
-            bt.UploadBlobAsync(blockBlob, filePath, url);
+            blobTransfer = new BlobTransfer();
+            blobTransfer.TransferProgressChanged += TransferProgressChanged;
+            blobTransfer.TransferCompleted += TransferCompleted;
+            blobTransfer.UploadBlobAsync(blockBlob, filePath, url);
         }
 
         private async Task<string> ShortenUrl(string longUrl)
