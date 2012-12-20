@@ -176,6 +176,9 @@ namespace BobShare
             CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
             CloudBlobContainer container = blobClient.GetContainerReference("shared");
 
+            // Ensure container exists
+            container.CreateIfNotExists();
+
             var extension = System.IO.Path.GetExtension(filePath);
 
             string blobName = Guid.NewGuid() + extension;
